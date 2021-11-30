@@ -46,7 +46,7 @@ def save_excel_data(df,output_name):
 def get_urls_from_dataframe(df):
     """
     Gets the Id, MainUrl, BackupUrl from the pandas dataframe. Requires the following fields in the excel file:
-        "BRnum", "Pdf_URL" and "GRI Content Index URL"
+        "BRnum", "Pdf_URL" and "Report Html Address"
 
     Input:
         pd : Pandas dataframe with the data loaded
@@ -57,7 +57,7 @@ def get_urls_from_dataframe(df):
     """
     id = "BRnum"
     primaryUrl = "Pdf_URL"
-    backupUrl = "GRI Content Index URL"
+    backupUrl = "Report Html Address"
     try:
         return df[[id,primaryUrl,backupUrl]]
     except:
@@ -219,7 +219,6 @@ def dialog(num_process):
         return
     df = get_urls_from_dataframe(df)
     master(num_process,df,output_dir)
-    end = time.time()
 
 
 if __name__ == '__main__':

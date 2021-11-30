@@ -9,3 +9,4 @@ If a pdf file of a given ID is already present in the download directory it will
 files that failed to download in previous runs will be attempted again
 
 The result excel file will be put in the downloads folder, which contains the ID, if it was downloaded, and the error messages if the file failed to download
+
