@@ -5,9 +5,9 @@ import PyPDF2
 import os
 import multiprocessing
 from os.path import exists
-import time
 import tkinter as tk
 import tkinter.filedialog
+import time
 
 def import_excel_data(filename):
     """
@@ -81,7 +81,8 @@ def check_pdf_file(filename):
     except:
         return False
 
-
+def to_csv_file(df,filename):
+    df.to_csv(filename,header=False,index=False)
 
 def download_pdf(url,filepath):
     """
@@ -98,7 +99,7 @@ def download_pdf(url,filepath):
     """
 
     try:
-        with requests.get(url,stream=True,timeout=10) as req:
+        with requests.get(url,stream=True,timeout=5) as req:
             if req.status_code != 200:
                 return (False,"Error status code %s" %req.status_code)
             req.raise_for_status()
@@ -119,7 +120,7 @@ def download_pdf(url,filepath):
         print(err.__str__)
         return (False,err.__str__)
     if check_pdf_file(filepath):
-        return (True,filepath)
+       return (True,filepath)
 
     os.remove(filepath)
     return (False, "Invalid pdf format downloaded")
@@ -184,10 +185,15 @@ def master(num_proceses,data,output_dir):
     with multiprocessing.Pool(processes=num_proceses) as pool:
         ress = [pool.apply_async(worker,args[i]) for i in range(len(data))]
         for i in range(len(ress)):
-            (id,res,msg1,msg2) = ress[i].get()
-            df.loc[i] = [id,res,msg1,msg2]
+            try:
+                (id,res,msg1,msg2) = ress[i].get(timeout=10)
+                df.loc[i] = [id,res,msg1,msg2]
+            except:
+                df.loc[i] = [ids[i],"no","timeout",""]
+                if exists("%s.pdf" % ids[i]):
+                    print("Hej")
+                print("%s took to long to complete, skipping" % ids[i])
 
-    #
     save_excel_data(df,output_dir+'/results.xlsx')
 
 
